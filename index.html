@@ -289,8 +289,8 @@
           <div class="ref">綱要〈受苦的心志〉</div>
         </div>
         <div class="quote minor">
-          <p>「原來基督的愛困迫我們。」</p>
-          <div class="ref">林後五14</div>
+          <p>「所以弟兄們，我藉着神的憐恤勸你們，將身體獻上，當作聖別並討神喜悅的活祭，這是你們合理的事奉。」</p>
+          <div class="ref">羅十二1</div>
         </div>
       </div>
     </div>
@@ -310,7 +310,7 @@
     i = Math.max(0, Math.min(slides.length - 1, n));
     slides.forEach((s, k) => s.classList.toggle('active', k === i));
     counter.textContent = (i + 1) + ' / ' + slides.length;
-    footer.style.display = (i === 0 || slides[i].classList.contains('ending')) ? 'none' : 'flex';
+    footer.style.display = (i === 0 || i === slides.length - 1 || slides[i].classList.contains('ending')) ? 'none' : 'flex';
     try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) {}
   }
 
