@@ -273,6 +273,29 @@
     </div>
   </section>
 
+  <!-- 12 禱告 -->
+  <section class="slide">
+    <div class="kicker">邀請家長</div>
+    <h2>請為孩子的「樂意」禱告</h2>
+    <div class="point">
+      <ul class="points-list">
+        <li>求主得着孩子的心<small>甘心樂意來受訓，不是被推着來</small></li>
+        <li>在訓練中主動要主<small>不只是把兩週撐完</small></li>
+        <li>留下的不是苦的回憶<small>而是屬靈的構成</small></li>
+      </ul>
+      <div>
+        <div class="quote">
+          <p>「這個心志說出人在神面前有一個存心，願意甘心樂意的為主受苦。」</p>
+          <div class="ref">綱要〈受苦的心志〉</div>
+        </div>
+        <div class="quote minor">
+          <p>「原來基督的愛困迫我們。」</p>
+          <div class="ref">林後五14</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <div class="footer"><span>青少年成全訓練</span><span id="counter"></span></div>
 </div>
 <div id="hint">← → 換頁 · F 全螢幕</div>
@@ -287,7 +310,7 @@
     i = Math.max(0, Math.min(slides.length - 1, n));
     slides.forEach((s, k) => s.classList.toggle('active', k === i));
     counter.textContent = (i + 1) + ' / ' + slides.length;
-    footer.style.display = (i === 0 || i === slides.length - 1) ? 'none' : 'flex';
+    footer.style.display = (i === 0 || slides[i].classList.contains('ending')) ? 'none' : 'flex';
     try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) {}
   }
 
