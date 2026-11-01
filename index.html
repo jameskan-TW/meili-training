@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>青少年成全訓練</title>
+<style>
+  :root {
+    --bg: #f6f1e7;
+    --ink: #2b2620;
+    --muted: #7a6f60;
+    --accent: #b5532f;
+    --accent-soft: #ead8c8;
+    --card: #fffaf2;
+    --line: #dccfbd;
+    --serif: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+    --sans: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #1c1915; overflow: hidden; }
+  body { font-family: var(--sans); color: var(--ink); }
+
+  #stage {
+    position: absolute; left: 50%; top: 50%;
+    width: 1920px; height: 1080px;
+    transform-origin: center center;
+  }
+  .slide {
+    position: absolute; inset: 0;
+    background: var(--bg);
+    padding: 100px 150px 130px;
+    display: none;
+    flex-direction: column;
+  }
+  .slide.active { display: flex; }
+
+  .kicker {
+    font-size: 30px; letter-spacing: 6px; color: var(--accent);
+    font-weight: 600; margin-bottom: 28px;
+  }
+  h1 { font-family: var(--serif); font-size: 120px; line-height: 1.2; font-weight: 700; }
+  h2 { font-family: var(--serif); font-size: 76px; line-height: 1.25; font-weight: 700; margin-bottom: 48px; }
+  .sub { font-size: 40px; color: var(--muted); margin-top: 40px; line-height: 1.6; }
+
+  /* 封面 */
+  .cover { justify-content: center; }
+  .cover .rule { width: 160px; height: 6px; background: var(--accent); margin: 56px 0 0; }
+
+  /* 總覽 */
+  .overview { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 60px; }
+  .ov-item { display: flex; align-items: baseline; gap: 32px; padding: 40px 0; border-top: 2px solid var(--line); }
+  .ov-num { font-family: var(--serif); font-size: 72px; color: var(--accent); font-weight: 700; min-width: 100px; }
+  .ov-text { font-size: 50px; font-weight: 600; line-height: 1.35; }
+
+  /* 重點頁 */
+  .point { display: grid; grid-template-columns: 1fr 1.15fr; gap: 90px; flex: 1; align-items: start; }
+  .points-list { list-style: none; }
+  .points-list li {
+    font-size: 44px; line-height: 1.5; padding: 26px 0 26px 48px; position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+  .points-list li::before {
+    content: ""; position: absolute; left: 0; top: 50px;
+    width: 18px; height: 18px; border-radius: 50%; background: var(--accent);
+  }
+  .points-list small { display: block; font-size: 34px; color: var(--muted); margin-top: 6px; }
+
+  .quote {
+    background: var(--card); border-left: 10px solid var(--accent);
+    padding: 48px 56px 44px; border-radius: 6px;
+    box-shadow: 0 2px 0 var(--line);
+  }
+  .quote p { font-family: var(--serif); font-size: 46px; line-height: 1.6; }
+  .quote .ref { font-family: var(--sans); font-size: 30px; color: var(--muted); margin-top: 24px; }
+  .quote + .quote { margin-top: 32px; }
+  .quote.minor p { font-size: 36px; }
+
+  /* 故事 */
+  .story { font-size: 46px; line-height: 1.7; }
+  .story .line { padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .story .q { color: var(--accent); font-weight: 600; }
+
+  /* 結尾 */
+  .closing { justify-content: center; align-items: center; text-align: center; }
+  .closing .big { font-family: var(--serif); font-size: 96px; line-height: 1.4; font-weight: 700; }
+  .closing .ref { font-size: 34px; color: var(--muted); margin-top: 40px; }
+  .closing .cta { margin-top: 90px; font-size: 48px; padding: 28px 72px; border: 3px solid var(--accent); color: var(--accent); border-radius: 999px; font-weight: 600; }
+
+  /* 照片頁 */
+  .photo-title { font-family: var(--serif); font-size: 60px; font-weight: 700; margin-bottom: 48px; }
+  .photos { display: flex; justify-content: center; gap: 36px; }
+  .photos img {
+    height: var(--h, 600px); width: auto; display: block;
+    border-radius: 8px; box-shadow: 0 6px 24px rgba(43, 38, 32, .18);
+  }
+
+  /* 結語 */
+  .ending { justify-content: center; }
+  .ending .big { font-family: var(--serif); font-size: 104px; line-height: 1.3; font-weight: 700; }
+  .ending .lead { font-family: var(--serif); font-size: 52px; line-height: 1.6; margin-top: 40px; color: var(--accent); }
+  .ending .body { font-size: 40px; line-height: 1.7; color: var(--ink); margin-top: 56px; max-width: 1500px; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 56px; }
+  .compare div { background: var(--card); border-top: 8px solid var(--line); padding: 36px 44px; border-radius: 6px; }
+  .compare div.strong { border-top-color: var(--accent); }
+  .compare b { display: block; font-size: 32px; color: var(--muted); font-weight: 600; margin-bottom: 12px; }
+  .compare span { font-family: var(--serif); font-size: 46px; font-weight: 700; }
+
+  .footer {
+    position: absolute; left: 150px; right: 150px; bottom: 56px;
+    display: flex; justify-content: space-between; font-size: 26px; color: var(--muted);
+  }
+
+  #hint {
+    position: fixed; bottom: 14px; right: 18px; color: #8d8577; font-size: 13px;
+    font-family: var(--sans); transition: opacity .6s;
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1 封面 -->
+  <section class="slide cover">
+    <div class="kicker">2027 美里 · 家長說明</div>
+    <h1>青少年成全訓練</h1>
+    <div class="sub">孩子在這兩週裏，會經歷什麼？</div>
+    <div class="rule"></div>
+  </section>
+
+  <!-- 2 總覽 -->
+  <section class="slide">
+    <div class="kicker">今天分享四件事</div>
+    <h2>四個重點</h2>
+    <div class="overview">
+      <div class="ov-item"><span class="ov-num">01</span><span class="ov-text">不是吃苦，是回復正常的生活</span></div>
+      <div class="ov-item"><span class="ov-num">02</span><span class="ov-text">向屬靈的二代傳福音</span></div>
+      <div class="ov-item"><span class="ov-num">03</span><span class="ov-text">物質輕，靈命重</span></div>
+      <div class="ov-item"><span class="ov-num">04</span><span class="ov-text">翻掉個性與陋習</span></div>
+    </div>
+  </section>
+
+  <!-- 3 重點一 -->
+  <section class="slide">
+    <div class="kicker">01</div>
+    <h2>不是吃苦，是回復正常的生活</h2>
+    <div class="point">
+      <ul class="points-list">
+        <li>早睡早起，規律運動</li>
+        <li>手洗衣服</li>
+        <li>沒有手機遊戲，沒有社群平台</li>
+        <li>天天讀經禱告</li>
+        <li>與同伴過團體生活</li>
+      </ul>
+      <div>
+        <div class="quote">
+          <p>「凡事我都可行，但無論那一件我總不受牠的轄制。」</p>
+          <div class="ref">林前六12</div>
+        </div>
+        <div class="quote minor">
+          <p>人有調劑的需要，但沒有顛倒的需要。</p>
+          <div class="ref">綱要〈衣食、消遣〉</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3-1 內務照片 -->
+  <section class="slide">
+    <div class="kicker">01 · 正常的生活</div>
+    <div class="photo-title">內務</div>
+    <div class="photos" style="--h: 600px">
+      <img src="photos/neiwu-1.jpg" alt="內務講解">
+      <img src="photos/neiwu-2.jpg" alt="整理好的床鋪">
+    </div>
+  </section>
+
+  <!-- 4 重點二 -->
+  <section class="slide">
+    <div class="kicker">02</div>
+    <h2>向屬靈的二代傳福音</h2>
+    <div class="point">
+      <ul class="points-list">
+        <li>認罪的操練<small>摸良心的感覺，使靈活過來</small></li>
+        <li>服事者一對一陪伴<small>針對每個孩子的情形交通、禱告、突破<br>父母的關係、情感的問題</small></li>
+        <li>美地簿操練<small>隨時把靈裏的感動抓下來</small></li>
+      </ul>
+      <div class="quote">
+        <p>「許多人雖然已經悔改得救了，但從來沒有在神面前徹底認過罪，所以他們在得救以後沒有多少救恩的快樂，也沒有多少屬靈的飢渴、追求和長進。」</p>
+        <div class="ref">綱要〈認罪〉· 聖經要道卷二</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4-1 認罪照片 -->
+  <section class="slide">
+    <div class="kicker">02 · 認罪的操練</div>
+    <div class="photo-title">認罪的操練</div>
+    <div class="photos" style="--h: 600px">
+      <img src="photos/confess-1.jpg" alt="">
+      <img src="photos/confess-4.jpg" alt="">
+    </div>
+  </section>
+  <section class="slide">
+    <div class="kicker">02 · 認罪的操練</div>
+    <div class="photo-title">認罪的操練</div>
+    <div class="photos" style="--h: 620px">
+      <img src="photos/confess-3.jpg" alt="">
+      <img src="photos/confess-5.jpg" alt="">
+      <img src="photos/confess-6.jpg" alt="">
+    </div>
+  </section>
+  <section class="slide">
+    <div class="kicker">02 · 認罪的操練</div>
+    <div class="photo-title">認罪的操練</div>
+    <div class="photos" style="--h: 620px">
+      <img src="photos/confess-2.jpg" alt="">
+      <img src="photos/confess-7.jpg" alt="">
+    </div>
+  </section>
+
+  <!-- 5 重點三 -->
+  <section class="slide">
+    <div class="kicker">03</div>
+    <h2>物質輕，靈命重</h2>
+    <div class="point">
+      <div class="story">
+        <div class="line">宵夜是硬邦邦、像老婆餅的點心</div>
+        <div class="line">弟兄姊妹卻搶着吃</div>
+        <div class="line"><span class="q">「你在台灣會吃這種東西嗎？」</span><br>「不會。」</div>
+        <div class="line">外面簡單了，神的話、服事者的交通，就容易進得去</div>
+      </div>
+      <div>
+        <div class="quote">
+          <p>「每當我們將自己完全向主敞開，他就有路將……新鮮、常新、且真實的事物，分賜到我們這人裏面。」</p>
+          <div class="ref">綱要〈逃避青年人的私慾，與同伴追求基督〉</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 重點四 -->
+  <section class="slide">
+    <div class="kicker">04</div>
+    <h2>翻掉個性與陋習</h2>
+    <div class="point">
+      <ul class="points-list">
+        <li>操練大聲釋放靈<small>突破靈裏的關卡</small></li>
+        <li>學會向身體敞開</li>
+        <li>與服事者同甘共苦兩週<small>什麼話都可以敞開交通</small></li>
+      </ul>
+      <div>
+        <div class="quote">
+          <p>「我們的個性被翻掉多少，我們的用處顯出纔有多少。」</p>
+          <div class="ref">綱要〈翻掉個性與顯出功用〉</div>
+        </div>
+        <div class="quote minor">
+          <p>「神賜給我們的，不是膽怯的靈，乃是能力、愛、並清明自守的靈。」</p>
+          <div class="ref">提後一7</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 結尾 -->
+  <section class="slide ending">
+    <div class="kicker">結語</div>
+    <div class="big">訓練訓練，<br>訓是一時，練是一生。</div>
+    <div class="lead">跟當兵一樣，刻畫進去的東西，拿不走。</div>
+    <div class="body">回到台灣，很多情形會暴露出來；但上過高山，再回來面對，就容易對自己屬靈的情形，知道什麼叫做「不滿意」。</div>
+    <div class="compare">
+      <div><b>台灣一週訓練</b><span>聚會中的不滿意</span></div>
+      <div class="strong"><b>美里兩週訓練</b><span>對自己的生活不滿意</span></div>
+    </div>
+  </section>
+
+  <div class="footer"><span>青少年成全訓練</span><span id="counter"></span></div>
+</div>
+<div id="hint">← → 換頁 · F 全螢幕</div>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  const counter = document.getElementById('counter');
+  const footer = document.querySelector('.footer');
+  let i = 0;
+
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+    footer.style.display = (i === 0 || i === slides.length - 1) ? 'none' : 'flex';
+    try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) {}
+  }
+
+  function fit() {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    document.getElementById('stage').style.transform = `translate(-50%, -50%) scale(${s})`;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    }
+  });
+  document.addEventListener('click', e => {
+    show(e.clientX < innerWidth / 3 ? i - 1 : i + 1);
+  });
+  let tx = null;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) show(dx < 0 ? i + 1 : i - 1);
+    tx = null;
+  });
+
+  addEventListener('hashchange', () => {
+    const n = (parseInt(location.hash.slice(1), 10) || 1) - 1;
+    if (n !== i) show(n);
+  });
+  addEventListener('resize', fit);
+  fit();
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+  setTimeout(() => { document.getElementById('hint').style.opacity = 0; }, 4000);
+</script>
+</body>
+</html>
